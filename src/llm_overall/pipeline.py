@@ -1,10 +1,7 @@
 import json
 from typing import Protocol
 
-from llm_overall.prompts import (
-    SYSTEM_PROMPT,
-    build_user_prompt,
-)
+from llm_overall.prompt_variants import PROMPT_VARIANTS
 
 
 class TextGenerator(Protocol):
@@ -18,14 +15,23 @@ class TextGenerator(Protocol):
 def run_pipeline(
     text: str,
     client: TextGenerator,
+    prompt_variant: str | None = None,
 ) -> dict:
     if not isinstance(text, str) or not text.strip():
         raise ValueError("Input text must not be empty")
 
-    user_prompt = build_user_prompt(text)
+    selected_variant = "B" if prompt_variant is None else prompt_variant
+
+    if selected_variant not in PROMPT_VARIANTS:
+        raise ValueError(f"Unknown prompt variant: {selected_variant}")
+
+    variant = PROMPT_VARIANTS[selected_variant]
+
+    system_prompt = variant.system_prompt
+    user_prompt = variant.build_user_prompt(text)
 
     raw_response = client.complete(
-        system_prompt=SYSTEM_PROMPT,
+        system_prompt=system_prompt,
         user_prompt=user_prompt,
     )
 

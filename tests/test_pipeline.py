@@ -56,3 +56,26 @@ def test_invalid_json() -> None:
             "Some text",
             InvalidJSONClient(),
         )
+
+
+def test_all_prompt_variants() -> None:
+    for variant_id in ("A", "B", "C"):
+        result = run_pipeline(
+            "Explain attention",
+            FakeLLMClient(),
+            prompt_variant=variant_id,
+        )
+
+        assert len(result["key_points"]) == 3
+
+
+def test_unknown_prompt_variant() -> None:
+    with pytest.raises(
+        ValueError,
+        match="Unknown prompt variant",
+    ):
+        run_pipeline(
+            "Explain attention",
+            FakeLLMClient(),
+            prompt_variant="unknown",
+        )
