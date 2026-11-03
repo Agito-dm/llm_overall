@@ -1,6 +1,7 @@
 import pytest
 
 from llm_overall.pipeline import run_pipeline
+from llm_overall.validation import StructuredOutputError
 
 
 class FakeLLMClient:
@@ -12,12 +13,14 @@ class FakeLLMClient:
         return """
         {
             "summary": "Test summary",
+            "category": "question",
+            "sentiment": "neutral",
             "key_points": [
                 "Point 1",
                 "Point 2",
                 "Point 3"
             ],
-            "response": "Helpful response"
+            "final_answer": "Helpful response"
         }
         """
 
@@ -38,8 +41,11 @@ def test_pipeline_success() -> None:
     )
 
     assert result["summary"] == "Test summary"
+    assert result["category"] == "question"
+    assert result["sentiment"] == "neutral"
     assert len(result["key_points"]) == 3
-    assert result["response"] == "Helpful response"
+    assert result["final_answer"] == "Helpful response"
+    assert len(result) == 5
 
 
 def test_empty_input() -> None:
@@ -49,13 +55,15 @@ def test_empty_input() -> None:
 
 def test_invalid_json() -> None:
     with pytest.raises(
-        ValueError,
+        StructuredOutputError,
         match="invalid JSON",
-    ):
+    ) as error:
         run_pipeline(
             "Some text",
             InvalidJSONClient(),
         )
+
+    assert error.value.code == "invalid_json"
 
 
 def test_all_prompt_variants() -> None:
@@ -67,6 +75,7 @@ def test_all_prompt_variants() -> None:
         )
 
         assert len(result["key_points"]) == 3
+        assert len(result) == 5
 
 
 def test_unknown_prompt_variant() -> None:

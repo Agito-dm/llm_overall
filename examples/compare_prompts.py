@@ -20,7 +20,7 @@ def count_words(text: str) -> int:
 def evaluate_result(result: dict) -> dict:
     summary = result.get("summary")
     points = result.get("key_points")
-    response = result.get("response")
+    response = result.get("final_answer")
 
     checks = {
         "summary_valid": (isinstance(summary, str) and 0 < count_words(summary) <= 50),

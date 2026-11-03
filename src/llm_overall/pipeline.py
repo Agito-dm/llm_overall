@@ -1,7 +1,7 @@
-import json
 from typing import Protocol
 
 from llm_overall.prompt_variants import PROMPT_VARIANTS
+from llm_overall.validation import parse_structured_output
 
 
 class TextGenerator(Protocol):
@@ -35,26 +35,4 @@ def run_pipeline(
         user_prompt=user_prompt,
     )
 
-    try:
-        result = json.loads(raw_response)
-    except json.JSONDecodeError as exc:
-        raise ValueError("LLM returned invalid JSON") from exc
-
-    if not isinstance(result, dict):
-        raise TypeError("LLM result must be a JSON object")
-
-    required_fields = {
-        "summary",
-        "key_points",
-        "response",
-    }
-
-    if not required_fields.issubset(result):
-        raise ValueError("LLM result is missing required fields")
-
-    points = result["key_points"]
-
-    if not isinstance(points, list) or len(points) != 3:
-        raise ValueError("LLM must return exactly 3 key points")
-
-    return result
+    return parse_structured_output(raw_response)
