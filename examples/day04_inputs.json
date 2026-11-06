@@ -1,0 +1,62 @@
+[
+    {
+        "id": "support_01",
+        "text": "После обновления программа перестала запускаться. Как исправить ошибку?",
+        "expected_category": "support",
+        "expected_intent": "troubleshooting"
+    },
+    {
+        "id": "support_02",
+        "text": "Подскажите, как настроить двухфакторную аутентификацию в аккаунте?",
+        "expected_category": "support",
+        "expected_intent": "how_to"
+    },
+    {
+        "id": "feedback_01",
+        "text": "Спасибо за приложение! Новый интерфейс стал намного удобнее.",
+        "expected_category": "feedback",
+        "expected_intent": "praise"
+    },
+    {
+        "id": "feedback_02",
+        "text": "Предлагаю добавить тёмную тему и возможность менять размер шрифта.",
+        "expected_category": "feedback",
+        "expected_intent": "suggestion"
+    },
+    {
+        "id": "complaint_01",
+        "text": "Я оплатил подписку, но услуга не работает. Требую вернуть деньги.",
+        "expected_category": "complaint",
+        "expected_intent": "refund_request"
+    },
+    {
+        "id": "complaint_02",
+        "text": "Поддержка игнорирует мои обращения уже неделю. Я недоволен обслуживанием.",
+        "expected_category": "complaint",
+        "expected_intent": "service_issue"
+    },
+    {
+        "id": "sales_01",
+        "text": "Сколько стоит профессиональный тариф и какие условия оплаты?",
+        "expected_category": "sales",
+        "expected_intent": "pricing"
+    },
+    {
+        "id": "sales_02",
+        "text": "Хочу купить подписку. Помогите сравнить базовый и профессиональный тарифы.",
+        "expected_category": "sales",
+        "expected_intent": "comparison"
+    },
+    {
+        "id": "general_01",
+        "text": "Объясните простыми словами, что такое машинное обучение.",
+        "expected_category": "general_question",
+        "expected_intent": "information"
+    },
+    {
+        "id": "general_02",
+        "text": "Почему зимой дни становятся короче?",
+        "expected_category": "general_question",
+        "expected_intent": "information"
+    }
+]

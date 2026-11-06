@@ -8,6 +8,7 @@ from openai import APIError
 from llm_overall.clients.llm_client import LLMClient
 from llm_overall.config import load_settings
 from llm_overall.core.pipeline import run_pipeline
+from llm_overall.core.routed_pipeline import run_routed_pipeline
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 
@@ -39,26 +40,33 @@ def main() -> None:
         help="Save result as JSON",
     )
 
+    parser.add_argument(
+        "--routed",
+        action="store_true",
+        help="Use Day 4 classification and routing pipeline",
+    )
+
     args = parser.parse_args()
 
     try:
         settings = load_settings()
         client = LLMClient(settings)
 
+        pipeline = run_routed_pipeline if args.routed else run_pipeline
+
         if args.demo:
             examples_path = PROJECT_ROOT / "examples" / "sample_inputs.json"
-
             examples = json.loads(examples_path.read_text(encoding="utf-8"))
 
             result = [
                 {
                     "id": example["id"],
-                    **run_pipeline(example["text"], client),
+                    **pipeline(example["text"], client),
                 }
                 for example in examples
             ]
         else:
-            result = run_pipeline(args.text, client)
+            result = pipeline(args.text, client)
 
         output = json.dumps(
             result,

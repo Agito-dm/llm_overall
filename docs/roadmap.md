@@ -12,23 +12,28 @@
 - [x] README and documentation
 
 ## Day 2 — Prompt Engineering
-- [ ] Three prompt variants
-- [ ] System prompt and user templates
-- [ ] Length and format constraints
-- [ ] Comparison on identical inputs
-- [ ] Quality evaluation and final selection
+- [x] Three prompt variants
+- [x] System prompt and user templates
+- [x] Length and format constraints
+- [x] Comparison on identical inputs
+- [x] Quality evaluation and final selection (B — Constrained)
 
 ## Day 3 — Structured Output
-- [ ] Extended JSON schema
-- [ ] Pydantic validation
-- [ ] Missing fields and invalid types
-- [ ] Five successful examples
+- [x] Extended JSON schema
+- [x] Pydantic validation
+- [x] Missing fields and invalid types
+- [x] Five successful examples
+- [x] 18 passing tests
 
 ## Day 4 — Classification and Routing
-- [ ] Categories and intent
-- [ ] Explicit routing logic
-- [ ] Category-dependent responses
-- [ ] Eight to ten test inputs
+- [x] Five categories and intent detection
+- [x] Explicit Python routing logic
+- [x] Category-dependent response generation
+- [x] Ten evaluation inputs
+- [x] Pydantic validation of routed output
+- [x] CLI integration with --routed
+- [x] 55 passing automated tests
+- [x] Real Gemini evaluation (8/10 successful before output normalization)
 
 ## Day 5 — Multi-step Chain
 - [ ] Extract meaning

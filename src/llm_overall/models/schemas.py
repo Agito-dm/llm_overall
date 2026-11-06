@@ -2,6 +2,8 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from llm_overall.classification.categories import Category, Intent
+
 
 class StructuredOutput(BaseModel):
     model_config = ConfigDict(
@@ -16,3 +18,14 @@ class StructuredOutput(BaseModel):
     sentiment: Literal["positive", "negative", "neutral", "mixed"]
     key_points: list[str] = Field(min_length=3, max_length=3)
     final_answer: str
+
+
+class ClassificationResult(BaseModel):
+    model_config = ConfigDict(
+        strict=True,
+        extra="forbid",
+        str_strip_whitespace=True,
+    )
+
+    category: Category
+    intent: Intent
