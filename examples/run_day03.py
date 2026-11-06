@@ -4,10 +4,10 @@ from time import perf_counter
 
 from openai import APIError
 
+from llm_overall.clients.llm_client import LLMClient
 from llm_overall.config import load_settings
-from llm_overall.llm_client import LLMClient
-from llm_overall.pipeline import run_pipeline
-from llm_overall.validation import StructuredOutputError
+from llm_overall.core.pipeline import run_pipeline
+from llm_overall.models.validation import StructuredOutputError
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 

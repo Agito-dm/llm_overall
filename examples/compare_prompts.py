@@ -5,10 +5,10 @@ from time import perf_counter
 
 from openai import APIError
 
+from llm_overall.clients.llm_client import LLMClient
 from llm_overall.config import load_settings
-from llm_overall.llm_client import LLMClient
-from llm_overall.pipeline import run_pipeline
-from llm_overall.prompt_variants import PROMPT_VARIANTS
+from llm_overall.core.pipeline import run_pipeline
+from llm_overall.prompts.prompt_variants import PROMPT_VARIANTS
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 

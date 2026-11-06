@@ -1,7 +1,7 @@
 from typing import Protocol
 
-from llm_overall.prompt_variants import PROMPT_VARIANTS
-from llm_overall.validation import parse_structured_output
+from llm_overall.models.validation import parse_structured_output
+from llm_overall.prompts.prompt_variants import PROMPT_VARIANTS
 
 
 class TextGenerator(Protocol):

@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from llm_overall.validation import StructuredOutputError, parse_structured_output
+from llm_overall.models.validation import StructuredOutputError, parse_structured_output
 
 
 def make_valid_payload() -> dict[str, object]:

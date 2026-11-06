@@ -1,7 +1,7 @@
 import pytest
 
-from llm_overall.pipeline import run_pipeline
-from llm_overall.validation import StructuredOutputError
+from llm_overall.core.pipeline import run_pipeline
+from llm_overall.models.validation import StructuredOutputError
 
 
 class FakeLLMClient:

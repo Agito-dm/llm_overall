@@ -1,6 +1,6 @@
 from pydantic import ValidationError
 
-from llm_overall.schemas import StructuredOutput
+from llm_overall.models.schemas import StructuredOutput
 
 
 class StructuredOutputError(ValueError):

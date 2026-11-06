@@ -25,3 +25,5 @@ outputs/
 # IDE
 .vscode/
 .idea/
+
+/docs/roadmap_tg.md
