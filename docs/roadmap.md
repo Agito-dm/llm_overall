@@ -36,23 +36,23 @@
 - [x] Real Gemini evaluation (8/10 successful before output normalization)
 
 ## Day 5 — Multi-step Chain
-- [ ] Extract meaning
-- [ ] Classify request
-- [ ] Build structured fields
-- [ ] Generate final answer
-- [ ] Self-check
-- [ ] Step-by-step logs
+- [x] Extract meaning
+- [x] Classify request
+- [x] Build structured fields
+- [x] Generate final answer
+- [x] Self-check
+- [x] Step-by-step logs
 
 ## Day 6 — Reliability
-- [ ] Retry on temporary API errors
-- [ ] Fallback behavior
-- [ ] Invalid JSON and empty responses
-- [ ] Response length guards
-- [ ] At least three negative scenarios
+- [x] Retry on temporary API errors
+- [x] Fallback behavior
+- [x] Invalid JSON and empty responses
+- [x] Response length guards
+- [x] At least three negative scenarios
 
 ## Day 7 — Finalization
-- [ ] Complete CLI workflow
-- [ ] Five demo scenarios
-- [ ] Updated README
-- [ ] Full test suite
-- [ ] Clean-clone reproducibility test
+- [x] Complete CLI workflow
+- [x] Five demo scenarios
+- [x] Updated README
+- [x] Full test suite
+- [x] Clean-clone reproducibility test

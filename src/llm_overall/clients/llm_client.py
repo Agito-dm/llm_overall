@@ -1,5 +1,6 @@
 import logging
-from time import perf_counter, sleep
+import os
+from time import monotonic, perf_counter, sleep
 
 from openai import APIConnectionError, APIStatusError, OpenAI
 
@@ -35,6 +36,29 @@ class LLMClient:
 
         self._client = OpenAI(**client_options)
         self._model = settings.model
+        self._min_request_interval = float(
+            os.getenv("LLM_REQUEST_INTERVAL_SECONDS", "0")
+        )
+        if self._min_request_interval < 0:
+            raise ValueError("Request interval must not be negative")
+
+        self._last_request_started: float | None = None
+
+    def _wait_for_rate_limit(self) -> None:
+        now = monotonic()
+
+        if self._last_request_started is not None:
+            elapsed = now - self._last_request_started
+            delay = self._min_request_interval - elapsed
+
+            if delay > 0:
+                logger.info(
+                    "Rate limit: waiting %.1f seconds before next request",
+                    delay,
+                )
+                sleep(delay)
+
+        self._last_request_started = monotonic()
 
     def complete(
         self,
@@ -42,6 +66,7 @@ class LLMClient:
         user_prompt: str,
     ) -> str:
         for attempt in range(1, MAX_ATTEMPTS + 1):
+            self._wait_for_rate_limit()
             logger.info(
                 "Sending request to model=%s, attempt=%d/%d",
                 self._model,

@@ -7,6 +7,7 @@ from openai import APIError
 
 from llm_overall.clients.llm_client import LLMClient
 from llm_overall.config import load_settings
+from llm_overall.core.multi_step_pipeline import run_multi_step_pipeline
 from llm_overall.core.pipeline import run_pipeline
 from llm_overall.core.routed_pipeline import run_routed_pipeline
 
@@ -40,10 +41,18 @@ def main() -> None:
         help="Save result as JSON",
     )
 
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group()
+
+    mode.add_argument(
         "--routed",
         action="store_true",
         help="Use Day 4 classification and routing pipeline",
+    )
+
+    mode.add_argument(
+        "--full",
+        action="store_true",
+        help="Use the complete five-step LLM pipeline",
     )
 
     args = parser.parse_args()
@@ -52,10 +61,18 @@ def main() -> None:
         settings = load_settings()
         client = LLMClient(settings)
 
-        pipeline = run_routed_pipeline if args.routed else run_pipeline
+        if args.full:
+            pipeline = run_multi_step_pipeline
+        elif args.routed:
+            pipeline = run_routed_pipeline
+        else:
+            pipeline = run_pipeline
 
         if args.demo:
-            examples_path = PROJECT_ROOT / "examples" / "sample_inputs.json"
+            examples_filename = (
+                "full_pipeline_inputs.json" if args.full else "sample_inputs.json"
+            )
+            examples_path = PROJECT_ROOT / "examples" / examples_filename
             examples = json.loads(examples_path.read_text(encoding="utf-8"))
 
             result = [
