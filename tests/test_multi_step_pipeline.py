@@ -93,10 +93,14 @@ def test_previous_results_used_in_next_steps() -> None:
 def test_invalid_final_answer() -> None:
     responses = make_responses()
     responses[2] = '{"wrong_field": "Invalid"}'
+    responses.insert(3, '{"wrong_field": "Still invalid"}')
+
     client = FakeChainClient(responses)
 
     with pytest.raises(ValueError, match="invalid final answer"):
         run_multi_step_pipeline("Приложение не работает", client)
+
+    assert len(client.calls) == 4
 
 
 def test_empty_input() -> None:
@@ -159,4 +163,125 @@ def test_pipeline_accepts_markdown_wrapped_json() -> None:
 
     assert result["category"] == "support"
     assert result["self_check"]["is_valid"] is True
+    assert len(client.calls) == 4
+
+
+def test_fallback_after_invalid_json() -> None:
+    responses = make_responses()
+    responses[2] = "This is not JSON"
+    responses.insert(
+        3,
+        json.dumps({"final_answer": "Проверьте настройки приложения."}),
+    )
+
+    client = FakeChainClient(responses)
+    result = run_multi_step_pipeline("Приложение не работает", client)
+
+    assert result["final_answer"] == "Проверьте настройки приложения."
+    assert result["self_check"]["is_valid"] is True
+    assert len(client.calls) == 5
+    assert "previous response failed validation" in client.calls[3][1].lower()
+
+
+def test_fallback_after_too_long_answer() -> None:
+    responses = make_responses()
+    responses[2] = json.dumps({"final_answer": "слово " * 81})
+    responses.insert(
+        3,
+        json.dumps({"final_answer": "Проверьте обновления."}),
+    )
+
+    client = FakeChainClient(responses)
+    result = run_multi_step_pipeline("Приложение не работает", client)
+
+    assert result["final_answer"] == "Проверьте обновления."
+    assert len(client.calls) == 5
+
+
+def test_fallback_after_empty_response() -> None:
+    responses = make_responses()
+    responses[2] = ""
+    responses.insert(
+        3,
+        json.dumps({"final_answer": "Перезапустите приложение."}),
+    )
+
+    client = FakeChainClient(responses)
+    result = run_multi_step_pipeline("Приложение не работает", client)
+
+    assert result["final_answer"] == "Перезапустите приложение."
+    assert len(client.calls) == 5
+
+
+def test_fallback_fails_on_second_invalid_response() -> None:
+    responses = make_responses()
+    responses[2] = "Invalid JSON"
+    responses.insert(3, '{"final_answer": ""}')
+
+    client = FakeChainClient(responses)
+
+    with pytest.raises(ValueError, match="after fallback"):
+        run_multi_step_pipeline("Приложение не работает", client)
+
+    assert len(client.calls) == 4
+
+
+def test_invalid_self_check_is_reported() -> None:
+    responses = make_responses()
+    responses[3] = "Invalid self-check JSON"
+
+    client = FakeChainClient(responses)
+    result = run_multi_step_pipeline("Приложение не работает", client)
+
+    assert result["self_check"]["is_valid"] is False
+    assert result["self_check"]["error"] == ("Self-check unavailable or invalid")
+    assert len(client.calls) == 4
+
+
+def test_fallback_after_oversized_raw_response() -> None:
+    responses = make_responses()
+    responses[2] = "x" * 12001
+    responses.insert(
+        3,
+        json.dumps({"final_answer": "Проверьте настройки."}),
+    )
+
+    client = FakeChainClient(responses)
+    result = run_multi_step_pipeline("Приложение не работает", client)
+
+    assert result["final_answer"] == "Проверьте настройки."
+    assert len(client.calls) == 5
+
+
+def test_api_error_does_not_trigger_fallback() -> None:
+    class FailingClient(FakeChainClient):
+        def complete(self, system_prompt: str, user_prompt: str) -> str:
+            if len(self.calls) == 2:
+                self.calls.append((system_prompt, user_prompt))
+                raise RuntimeError("Simulated API failure")
+
+            return super().complete(system_prompt, user_prompt)
+
+    client = FailingClient(make_responses())
+
+    with pytest.raises(RuntimeError, match="Simulated API failure"):
+        run_multi_step_pipeline("Приложение не работает", client)
+
+    assert len(client.calls) == 3
+
+
+def test_self_check_api_error_is_not_hidden() -> None:
+    class FailingClient(FakeChainClient):
+        def complete(self, system_prompt: str, user_prompt: str) -> str:
+            if len(self.calls) == 3:
+                self.calls.append((system_prompt, user_prompt))
+                raise RuntimeError("Self-check API unavailable")
+
+            return super().complete(system_prompt, user_prompt)
+
+    client = FailingClient(make_responses())
+
+    with pytest.raises(RuntimeError, match="Self-check API unavailable"):
+        run_multi_step_pipeline("Приложение не работает", client)
+
     assert len(client.calls) == 4
